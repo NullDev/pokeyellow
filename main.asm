@@ -98,7 +98,7 @@ INCLUDE "engine/hp_bar.asm"
 INCLUDE "engine/hidden_object_functions3.asm"
 
 
-SECTION "Graphics", ROMX
+SECTION "Graphics", ROMX ; BANK $04
 
 PokemonLogoJapanGraphics:       INCBIN "gfx/pokemon_logo_japan.2bpp"
 FontGraphics:                   INCBIN "gfx/font.1bpp"
@@ -134,7 +134,7 @@ INCLUDE "engine/menu/start_sub_menus.asm"
 INCLUDE "engine/items/tms.asm"
 
 
-SECTION "NPC Sprites 1", ROMX
+SECTION "NPC Sprites 1", ROMX ; BANK $04
 
 OakAideSprite:         INCBIN "gfx/sprites/oak_aide.2bpp"
 RockerSprite:          INCBIN "gfx/sprites/rocker.2bpp"
@@ -172,7 +172,7 @@ INCLUDE "engine/battle/moveEffects/conversion_effect.asm"
 INCLUDE "engine/battle/moveEffects/haze_effect.asm"
 
 
-SECTION "NPC Sprites 2", ROMX
+SECTION "NPC Sprites 2", ROMX ; BANK $05
 
 INCLUDE "engine/load_pokedex_tiles.asm"
 INCLUDE "engine/overworld/map_sprites.asm"
@@ -468,7 +468,7 @@ INCLUDE "engine/menu/oaks_pc.asm"
 INCLUDE "engine/hidden_object_functions7.asm"
 
 
-SECTION "Pics 1", ROMX
+SECTION "Pics 1", ROMX ; BANK $09
 
 RhydonPicFront:      INCBIN "pic/ymon/rhydon.pic"
 RhydonPicBack:       INCBIN "pic/monback/rhydonb.pic"
@@ -535,7 +535,7 @@ INCLUDE "engine/battle/print_type.asm"
 INCLUDE "engine/battle/save_trainer_name.asm"
 
 
-SECTION "Pics 2", ROMX
+SECTION "Pics 2", ROMX ; BANK $0A
 
 GrowlithePicFront:   INCBIN "pic/ymon/growlithe.pic"
 GrowlithePicBack:    INCBIN "pic/monback/growlitheb.pic"
@@ -606,7 +606,7 @@ INCLUDE "engine/predefsA.asm"
 INCLUDE "engine/battle/moveEffects/leech_seed_effect.asm"
 
 
-SECTION "Pics 3", ROMX
+SECTION "Pics 3", ROMX ; BANK $0B
 
 ArticunoPicFront:    INCBIN "pic/ymon/articuno.pic"
 ArticunoPicBack:     INCBIN "pic/monback/articunob.pic"
@@ -693,7 +693,7 @@ INCLUDE "engine/battle/scale_sprites.asm"
 INCLUDE "engine/game_corner_slots2.asm"
 
 
-SECTION "Pics 4", ROMX
+SECTION "Pics 4", ROMX ; BANK $0C
 
 DodrioPicFront:       INCBIN "pic/ymon/dodrio.pic"
 DodrioPicBack:        INCBIN "pic/monback/dodriob.pic"
@@ -755,7 +755,7 @@ StarmiePicFront:      INCBIN "pic/ymon/starmie.pic"
 StarmiePicBack:       INCBIN "pic/monback/starmieb.pic"
 
 
-SECTION "Pics 5", ROMX
+SECTION "Pics 5", ROMX ; BANK $0D
 
 BulbasaurPicFront:    INCBIN "pic/ymon/bulbasaur.pic"
 BulbasaurPicBack:     INCBIN "pic/monback/bulbasaurb.pic"
@@ -825,7 +825,7 @@ INCLUDE "data/cries.asm"
 INCLUDE "engine/battle/trainer_ai.asm"
 INCLUDE "engine/battle/draw_hud_pokeball_gfx.asm"
 
-TradingAnimationGraphics: INCBIN "gfx/game_boy.norepeat.2bpp"
+TradingAnimationGraphics: INCBIN "gfx/game_boy.2bpp"
 	INCBIN "gfx/link_cable.2bpp"
 TradingAnimationGraphicsEnd:
 
@@ -1758,20 +1758,22 @@ INCLUDE "engine/hidden_object_functions18.asm"
 SECTION "bank19", ROMX
 
 Overworld_GFX:     INCBIN "gfx/tilesets/overworld.2bpp"
+ds 32
 Overworld_Block:   INCBIN "gfx/blocksets/overworld.bst"
 RedsHouse1_GFX:
-RedsHouse2_GFX:    INCBIN "gfx/tilesets/redshouse2.t7.2bpp"
+RedsHouse2_GFX:    INCBIN "gfx/tilesets/redshouse2.2bpp"
+ds 16
 RedsHouse1_Block:
 RedsHouse2_Block:  INCBIN "gfx/blocksets/redshouse2.bst"
-House_GFX:         INCBIN "gfx/tilesets/house.t2.2bpp"
+House_GFX:         INCBIN "gfx/tilesets/house.2bpp"
 House_Block:       INCBIN "gfx/blocksets/house.bst"
-Mansion_GFX:       INCBIN "gfx/tilesets/mansion.t2.2bpp"
+Mansion_GFX:       INCBIN "gfx/tilesets/mansion.2bpp"
 Mansion_Block:     INCBIN "gfx/blocksets/mansion.bst"
-ShipPort_GFX:      INCBIN "gfx/tilesets/shipport.t2.2bpp"
+ShipPort_GFX:      INCBIN "gfx/tilesets/shipport.2bpp"
 ShipPort_Block:    INCBIN "gfx/blocksets/shipport.bst"
-Interior_GFX:      INCBIN "gfx/tilesets/interior.t1.2bpp"
+Interior_GFX:      INCBIN "gfx/tilesets/interior.2bpp"
 Interior_Block:    INCBIN "gfx/blocksets/interior.bst"
-Plateau_GFX:       INCBIN "gfx/tilesets/plateau.t10.2bpp"
+Plateau_GFX:       INCBIN "gfx/tilesets/plateau.2bpp"
 Plateau_Block:     INCBIN "gfx/blocksets/plateau.bst"
 
 
@@ -1789,7 +1791,7 @@ Mart_Block:
 Pokecenter_Block:  INCBIN "gfx/blocksets/pokecenter.bst"
 ForestGate_GFX:
 Gate_GFX:
-Museum_GFX:        INCBIN "gfx/tilesets/museum.t1.2bpp"
+Museum_GFX:        INCBIN "gfx/tilesets/museum.2bpp"
 ForestGate_Block:
 Gate_Block:
 Museum_Block:      INCBIN "gfx/blocksets/museum.bst"
@@ -1801,19 +1803,19 @@ Facility_Block:    INCBIN "gfx/blocksets/facility.bst"
 
 SECTION "bank1B", ROMX
 
-Cemetery_GFX:      INCBIN "gfx/tilesets/cemetery.t4.2bpp"
+Cemetery_GFX:      INCBIN "gfx/tilesets/cemetery.2bpp"
 Cemetery_Block:    INCBIN "gfx/blocksets/cemetery.bst"
-Cavern_GFX:        INCBIN "gfx/tilesets/cavern.t14.2bpp"
+Cavern_GFX:        INCBIN "gfx/tilesets/cavern.2bpp"
 Cavern_Block:      INCBIN "gfx/blocksets/cavern.bst"
-Lobby_GFX:         INCBIN "gfx/tilesets/lobby.t2.2bpp"
+Lobby_GFX:         INCBIN "gfx/tilesets/lobby.2bpp"
 Lobby_Block:       INCBIN "gfx/blocksets/lobby.bst"
-Ship_GFX:          INCBIN "gfx/tilesets/ship.t6.2bpp"
+Ship_GFX:          INCBIN "gfx/tilesets/ship.2bpp"
 Ship_Block:        INCBIN "gfx/blocksets/ship.bst"
-Lab_GFX:           INCBIN "gfx/tilesets/lab.t4.2bpp"
+Lab_GFX:           INCBIN "gfx/tilesets/lab.2bpp"
 Lab_Block:         INCBIN "gfx/blocksets/lab.bst"
-Club_GFX:          INCBIN "gfx/tilesets/club.t5.2bpp"
+Club_GFX:          INCBIN "gfx/tilesets/club.2bpp"
 Club_Block:        INCBIN "gfx/blocksets/club.bst"
-Underground_GFX:   INCBIN "gfx/tilesets/underground.t7.2bpp"
+Underground_GFX:   INCBIN "gfx/tilesets/underground.2bpp"
 Underground_Block: INCBIN "gfx/blocksets/underground.bst"
 
 
@@ -2112,12 +2114,14 @@ INCLUDE "engine/overworld/is_player_just_outside_map.asm"
 INCLUDE "engine/printer.asm"
 INCLUDE "engine/diploma_3a.asm"
 
-SurfingPikachu3Graphics:  INCBIN "gfx/surfing_pikachu_3.t1.2bpp"
+SurfingPikachu3Graphics:  INCBIN "gfx/surfing_pikachu_3.2bpp"
 SurfingPikachu3GraphicsEnd:
 
 INCLUDE "engine/unknown_ea3ea.asm"
 
 INCLUDE "engine/overworld/npc_movement_2.asm"
+
+; bank $3b is empty
 
 SECTION "bank3C", ROMX
 
