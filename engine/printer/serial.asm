@@ -1,3 +1,14 @@
+	const_def
+	const PRINTER_STATUS_BLANK
+	const PRINTER_STATUS_CHECKING_LINK
+	const PRINTER_STATUS_TRANSMITTING
+	const PRINTER_STATUS_PRINTING
+	const PRINTER_ERROR_1
+	const PRINTER_ERROR_2
+	const PRINTER_ERROR_3
+	const PRINTER_ERROR_4
+	const PRINTER_ERROR_WRONG_DEVICE
+
 StartTransmission_Send9Rows:
 	ld a, 9
 Printer_StartTransmission:
@@ -7,8 +18,8 @@ Printer_StartTransmission:
 	xor a
 	call Printer_FillMemory
 	xor a
-	ld [rSB], a
-	ld [rSC], a
+	ldh [rSB], a
+	ldh [rSC], a
 	ld [wPrinterOpcode], a
 	ld hl, wPrinterConnectionOpen
 	set 0, [hl]
@@ -104,9 +115,9 @@ Printer_StartTransmittingTilemap:
 	ld hl, PrinterDataPacket3
 	call CopyPrinterDataHeader
 	call Printer_Convert2RowsTo2bpp
-	ld a, (wPrinterSendDataSource1End - wPrinterSendDataSource1) % $100
+	ld a, LOW(wPrinterSendDataSource1End - wPrinterSendDataSource1)
 	ld [wPrinterDataSize], a
-	ld a, (wPrinterSendDataSource1End - wPrinterSendDataSource1) / $100
+	ld a, HIGH(wPrinterSendDataSource1End - wPrinterSendDataSource1)
 	ld [wPrinterDataSize + 1], a
 	call ComputePrinterChecksum
 	call Printer_Next
@@ -269,11 +280,11 @@ Printer_PrepareToSend:
 	ld a, $1
 	ld [wPrinterOpcode], a
 	ld a, $88
-	ld [rSB], a
+	ldh [rSB], a
 	ld a, $1
-	ld [rSC], a
+	ldh [rSC], a
 	ld a, $81
-	ld [rSC], a
+	ldh [rSC], a
 	ret
 
 CopyPrinterDataHeader:
@@ -438,7 +449,7 @@ PrinterDataPacket6: ; unused
 	db 15, 0, $00, 0
 	dw 15
 
-PrinterSerial_:
+PrinterSerial_::
 	ld a, [wPrinterOpcode]
 	ld e, a
 	ld d, 0
@@ -573,7 +584,7 @@ PrinterSerial_:
 	ret
 
 .Receive1:
-	ld a, [rSB]
+	ldh a, [rSB]
 	ld [wPrinterHandshake], a
 	ld a, $0
 	call .SendByte
@@ -581,7 +592,7 @@ PrinterSerial_:
 	ret
 
 .Receive2:
-	ld a, [rSB]
+	ldh a, [rSB]
 	ld [wPrinterStatusFlags], a
 	xor a
 	ld [wPrinterOpcode], a
@@ -606,15 +617,15 @@ PrinterSerial_:
 	ret
 
 .SendByte:
-	ld [rSB], a
+	ldh [rSB], a
 	ld a, $1
-	ld [rSC], a
+	ldh [rSC], a
 	ld a, $81
-	ld [rSC], a
+	ldh [rSC], a
 	ret
 
 .Receive2_:
-	ld a, [rSB]
+	ldh a, [rSB]
 	ld [wPrinterStatusFlags], a
 	xor a
 	ld [wPrinterOpcode], a
