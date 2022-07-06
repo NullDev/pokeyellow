@@ -62,7 +62,7 @@ PlaceNextChar::
 	cp "<NEXT>"
 	jr nz, .NotNext
 	ld bc, 2 * SCREEN_WIDTH
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	bit 2, a
 	jr z, .ok
 	ld bc, SCREEN_WIDTH
@@ -123,7 +123,7 @@ TextIDErrorText:: ; "[hSpriteIndexOrTextID] ERROR."
 	text_far _TextIDErrorText
 	text_end
 
-print_name: MACRO
+MACRO print_name
 	push de
 	ld de, \1
 	jr PlaceCommandCharacter
@@ -239,7 +239,7 @@ Paragraph::
 	jp NextChar
 
 PageChar::
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	bit 3, a
 	jr z, .pageChar
 	ld a, "<NEXT>"
@@ -553,7 +553,7 @@ TextCommandSounds::
 	db TX_SOUND_GET_ITEM_2,           SFX_GET_ITEM_2
 	db TX_SOUND_GET_KEY_ITEM,         SFX_GET_KEY_ITEM
 	db TX_SOUND_DEX_PAGE_ADDED,       SFX_DEX_PAGE_ADDED
-	db TX_SOUND_CRY_PIKACHU,          PIKACHU ; used in OakSpeech
+	db TX_SOUND_CRY_PIKACHU,          STARTER_PIKACHU ; used in OakSpeech
 	db TX_SOUND_CRY_PIDGEOT,          PIDGEOT ; used in SaffronCityText12
 	db TX_SOUND_CRY_DEWGONG,          DEWGONG ; unused
 

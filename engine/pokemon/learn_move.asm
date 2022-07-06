@@ -44,7 +44,7 @@ DontAbandonLearning:
 	push de
 	dec a
 	ld hl, Moves
-	ld bc, MoveEnd - Moves
+	ld bc, MOVE_LENGTH
 	call AddNTimes
 	ld de, wBuffer
 	ld a, BANK(Moves)
@@ -125,13 +125,13 @@ TryingToLearn:
 	call TextBoxBorder
 	hlcoord 6, 8
 	ld de, wMovesString
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	set 2, a
-	ldh [hFlagsFFFA], a
+	ldh [hUILayoutFlags], a
 	call PlaceString
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	res 2, a
-	ldh [hFlagsFFFA], a
+	ldh [hUILayoutFlags], a
 	ld hl, wTopMenuItemY
 	ld a, 8
 	ld [hli], a ; wTopMenuItemY
@@ -145,16 +145,16 @@ TryingToLearn:
 	ld a, A_BUTTON | B_BUTTON
 	ld [hli], a ; wMenuWatchedKeys
 	ld [hl], 0 ; wLastMenuItem
-	ld hl, hFlagsFFFA
+	ld hl, hUILayoutFlags
 	set 1, [hl]
 	call HandleMenuInput
-	ld hl, hFlagsFFFA
+	ld hl, hUILayoutFlags
 	res 1, [hl]
 	push af
 	call LoadScreenTilesFromBuffer1
 	pop af
 	pop hl
-	bit 1, a ; pressed b
+	bit BIT_B_BUTTON, a
 	jr nz, .cancel
 	push hl
 	ld a, [wCurrentMenuItem]

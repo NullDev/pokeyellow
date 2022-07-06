@@ -1,4 +1,4 @@
-NOT_VISITED EQU $fe
+DEF NOT_VISITED EQU $fe
 
 DisplayTownMap:
 	call LoadTownMap
@@ -105,7 +105,7 @@ DisplayTownMap:
 	ld [wWhichTownMapLocation], a
 	jp .townMapLoop
 
-.asm_70f87
+Func_70f87: ; unreferenced
 	ldh a, [hJoy5]
 	and D_DOWN | D_UP
 	ret z
@@ -260,7 +260,7 @@ ToText:
 	db "To@"
 
 BuildFlyLocationsList:
-	ld hl, wFlyLocationsList - 1
+	ld hl, wFlyAnimUsingCoordList
 	ld [hl], $ff
 	inc hl
 	ld a, [wTownVisitedFlag]

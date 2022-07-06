@@ -3,10 +3,10 @@ SurfingPikachuMinigame::
 	call DelayFrame
 	call DelayFrame
 	call DelayFrame
-	ldh a, [hTilesetType]
+	ldh a, [hTileAnimations]
 	push af
 	xor a
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 	ld a, [wUpdateSpritesEnabled]
 	push af
 	ld a, $ff
@@ -56,7 +56,7 @@ SurfingPikachuMinigame::
 	pop af
 	ld [wUpdateSpritesEnabled], a
 	pop af
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 	ret
 
 SurfingPikachuLoop:
@@ -487,8 +487,8 @@ Func_f8324:
 	xor a
 	ldh [hLCDCPointer], a
 	ld [wSurfingMinigameSCX], a
-	ld [wSurfingMinigameSCX + 1], a
-	ld [wSurfingMinigameSCX + 2], a
+	ld [wSurfingMinigameSCX2], a
+	ld [wSurfingMinigameSCXHi], a
 	ret
 
 Func_f835c:
@@ -1879,13 +1879,13 @@ SurfingMinigame_ScrollAndGenerateBGMap:
 	ld a, h
 	ldh [hSCX], a
 SurfingMinigame_GenerateBGMap:
-	ld hl, wSurfingMinigameSCX + 1
+	ld hl, wSurfingMinigameSCX2
 	ldh a, [hSCX]
 	cp [hl]
 	ret z
 	ld [hl], a
 	and $f0
-	ld hl, wSurfingMinigameSCX + 2
+	ld hl, wSurfingMinigameSCXHi
 	cp [hl]
 	ret z
 	ld [hl], a
@@ -2740,7 +2740,7 @@ SurfingPikachu_Sine: ; sine
 	ret
 
 .SineWave:
-	sine_wave $100
+	sine_table 32
 
 SurfingPikachuSpawnStateDataPointer:
 	db $00, $00, $00 ; 0

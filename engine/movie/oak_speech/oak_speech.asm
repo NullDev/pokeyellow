@@ -60,7 +60,7 @@ OakSpeech:
 	ld [wDestinationMap], a
 	call SpecialWarpIn
 	xor a
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 	ld a, [wd732]
 	bit 1, a ; possibly a debug mode bit
 	jp nz, .skipChoosingNames
@@ -72,7 +72,7 @@ OakSpeech:
 	call PrintText
 	call GBFadeOutToWhite
 	call ClearScreen
-	ld a, PIKACHU
+	ld a, STARTER_PIKACHU
 	ld [wd0b5], a
 	ld [wcf91], a
 	call GetMonHeader

@@ -1,35 +1,37 @@
-tileset: MACRO
-	db BANK(\2)   ; BANK(GFX)
-	dw \1, \2, \3 ; Block, GFX, Coll
-	db \4, \5, \6 ; counter tiles
-	db \7         ; grass tile
-	db \8         ; permission (indoor, cave, outdoor)
+MACRO tileset
+	db BANK(\1_GFX)
+	dw \1_Block, \1_GFX, \1_Coll
+	db \2, \3, \4 ; counter tiles
+	db \5         ; grass tile
+	db \6         ; animations (TILEANIM_* value)
 ENDM
 
 Tilesets:
-	; block, gfx, coll, 3 counter tiles, grass tile, permission
-	tileset Overworld_Block,   Overworld_GFX,   Overworld_Coll,   $FF,$FF,$FF, $52, OUTDOOR
-	tileset RedsHouse1_Block,  RedsHouse1_GFX,  RedsHouse1_Coll,  $FF,$FF,$FF, $FF, INDOOR
-	tileset Mart_Block,        Mart_GFX,        Mart_Coll,        $18,$19,$1E, $FF, INDOOR
-	tileset Forest_Block,      Forest_GFX,      Forest_Coll,      $FF,$FF,$FF, $20, CAVE
-	tileset RedsHouse2_Block,  RedsHouse2_GFX,  RedsHouse2_Coll,  $FF,$FF,$FF, $FF, INDOOR
-	tileset Dojo_Block,        Dojo_GFX,        Dojo_Coll,        $3A,$FF,$FF, $FF, OUTDOOR
-	tileset Pokecenter_Block,  Pokecenter_GFX,  Pokecenter_Coll,  $18,$19,$1E, $FF, INDOOR
-	tileset Gym_Block,         Gym_GFX,         Gym_Coll,         $3A,$FF,$FF, $FF, OUTDOOR
-	tileset House_Block,       House_GFX,       House_Coll,       $FF,$FF,$FF, $FF, INDOOR
-	tileset ForestGate_Block,  ForestGate_GFX,  ForestGate_Coll,  $17,$32,$FF, $FF, INDOOR
-	tileset Museum_Block,      Museum_GFX,      Museum_Coll,      $17,$32,$FF, $FF, INDOOR
-	tileset Underground_Block, Underground_GFX, Underground_Coll, $FF,$FF,$FF, $FF, INDOOR
-	tileset Gate_Block,        Gate_GFX,        Gate_Coll,        $17,$32,$FF, $FF, INDOOR
-	tileset Ship_Block,        Ship_GFX,        Ship_Coll,        $FF,$FF,$FF, $FF, CAVE
-	tileset ShipPort_Block,    ShipPort_GFX,    ShipPort_Coll,    $FF,$FF,$FF, $FF, CAVE
-	tileset Cemetery_Block,    Cemetery_GFX,    Cemetery_Coll,    $12,$FF,$FF, $FF, INDOOR
-	tileset Interior_Block,    Interior_GFX,    Interior_Coll,    $FF,$FF,$FF, $FF, INDOOR
-	tileset Cavern_Block,      Cavern_GFX,      Cavern_Coll,      $FF,$FF,$FF, $FF, CAVE
-	tileset Lobby_Block,       Lobby_GFX,       Lobby_Coll,       $15,$36,$FF, $FF, INDOOR
-	tileset Mansion_Block,     Mansion_GFX,     Mansion_Coll,     $FF,$FF,$FF, $FF, INDOOR
-	tileset Lab_Block,         Lab_GFX,         Lab_Coll,         $FF,$FF,$FF, $FF, INDOOR
-	tileset Club_Block,        Club_GFX,        Club_Coll,        $07,$17,$FF, $FF, INDOOR
-	tileset Facility_Block,    Facility_GFX,    Facility_Coll,    $12,$FF,$FF, $FF, CAVE
-	tileset Plateau_Block,     Plateau_GFX,     Plateau_Coll,     $FF,$FF,$FF, $45, CAVE
-	tileset BeachHouse_Block,  BeachHouse_GFX,  BeachHouse_Coll,  $FF,$FF,$FF, $FF, INDOOR
+	table_width 12, Tilesets
+	; name, 3 counter tiles, grass tile, animations
+	tileset Overworld,    -1, -1, -1, $52, TILEANIM_WATER_FLOWER
+	tileset RedsHouse1,   -1, -1, -1,  -1, TILEANIM_NONE
+	tileset Mart,        $18,$19,$1E,  -1, TILEANIM_NONE
+	tileset Forest,       -1, -1, -1, $20, TILEANIM_WATER
+	tileset RedsHouse2,   -1, -1, -1,  -1, TILEANIM_NONE
+	tileset Dojo,        $3A, -1, -1,  -1, TILEANIM_WATER_FLOWER
+	tileset Pokecenter,  $18,$19,$1E,  -1, TILEANIM_NONE
+	tileset Gym,         $3A, -1, -1,  -1, TILEANIM_WATER_FLOWER
+	tileset House,        -1, -1, -1,  -1, TILEANIM_NONE
+	tileset ForestGate,  $17,$32, -1,  -1, TILEANIM_NONE
+	tileset Museum,      $17,$32, -1,  -1, TILEANIM_NONE
+	tileset Underground,  -1, -1, -1,  -1, TILEANIM_NONE
+	tileset Gate,        $17,$32, -1,  -1, TILEANIM_NONE
+	tileset Ship,         -1, -1, -1,  -1, TILEANIM_WATER
+	tileset ShipPort,     -1, -1, -1,  -1, TILEANIM_WATER
+	tileset Cemetery,    $12, -1, -1,  -1, TILEANIM_NONE
+	tileset Interior,     -1, -1, -1,  -1, TILEANIM_NONE
+	tileset Cavern,       -1, -1, -1,  -1, TILEANIM_WATER
+	tileset Lobby,       $15,$36, -1,  -1, TILEANIM_NONE
+	tileset Mansion,      -1, -1, -1,  -1, TILEANIM_NONE
+	tileset Lab,          -1, -1, -1,  -1, TILEANIM_NONE
+	tileset Club,        $07,$17, -1,  -1, TILEANIM_NONE
+	tileset Facility,    $12, -1, -1,  -1, TILEANIM_WATER
+	tileset Plateau,      -1, -1, -1, $45, TILEANIM_WATER
+	tileset BeachHouse,   -1, -1, -1,  -1, TILEANIM_NONE
+	assert_table_length NUM_TILESETS

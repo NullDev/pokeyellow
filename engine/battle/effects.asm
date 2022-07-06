@@ -108,10 +108,10 @@ PoisonEffect:
 	jr z, .noEffect
 	ld a, [de]
 	cp POISON_SIDE_EFFECT1
-	ld b, $34 ; ~20% chance of poisoning
+	ld b, 20 percent + 1 ; chance of poisoning
 	jr z, .sideEffectTest
 	cp POISON_SIDE_EFFECT2
-	ld b, $67 ; ~40% chance of poisoning
+	ld b, 40 percent + 1 ; chance of poisoning
 	jr z, .sideEffectTest
 	push hl
 	push de
@@ -226,17 +226,18 @@ FreezeBurnParalyzeEffect:
 	ld a, [wUnknownSerialFlag_d499]
 	and a
 	ld a, FREEZE_SIDE_EFFECT
-	ld b, $4d ; else use 0x4D/0x100 or 77/256 = 30.1%~ chance
-	jr z, .next1
-	ld b, $1a ; 0x1A/0x100 or 26/256 = 10.2%~ chance
-	jr .next1
+	ld b, 30 percent + 1
+	jr z, .regular_effectiveness
+	ld b, 10 percent + 1
+	jr .regular_effectiveness
 .asm_3f2c7
-	cp PARALYZE_SIDE_EFFECT1 + 1 ; 10% status effects are 04, 05, 06 so 07 will set carry for those
-	ld b, $1a ; 0x1A/0x100 or 26/256 = 10.2%~ chance
-	jr c, .next1 ; branch ahead if this is a 10% chance effect..
-	ld b, $4d ; else use 0x4D/0x100 or 77/256 = 30.1%~ chance
-	sub $1e ; subtract $1E to map to equivalent 10% chance effects
-.next1
+	cp PARALYZE_SIDE_EFFECT1 + 1
+	ld b, 10 percent + 1
+	jr c, .regular_effectiveness
+; extra effectiveness
+	ld b, 30 percent + 1
+	sub BURN_SIDE_EFFECT2 - BURN_SIDE_EFFECT1 ; treat extra effective as regular from now on
+.regular_effectiveness
 	push af
 	call BattleRandom ; get random 8bit value for probability test
 	cp b
@@ -288,17 +289,18 @@ FreezeBurnParalyzeEffect:
 	ld a, [wUnknownSerialFlag_d499]
 	and a
 	ld a, FREEZE_SIDE_EFFECT
-	ld b, $4d ; else use 0x4D/0x100 or 77/256 = 30.1%~ chance
-	jr z, .next2
-	ld b, $1a ; 0x1A/0x100 or 26/256 = 10.2%~ chance
-	jr .next2
+	ld b, 30 percent + 1
+	jr z, .regular_effectiveness2
+	ld b, 10 percent + 1
+	jr .regular_effectiveness2
 .asm_3f341
 	cp PARALYZE_SIDE_EFFECT1 + 1
-	ld b, $1a
-	jr c, .next2
-	ld b, $4d
-	sub $1e
-.next2
+	ld b, 10 percent + 1
+	jr c, .regular_effectiveness2
+; extra effectiveness
+	ld b, 30 percent + 1
+	sub BURN_SIDE_EFFECT2 - BURN_SIDE_EFFECT1 ; treat extra effective as regular from now on
+.regular_effectiveness2
 	push af
 	call BattleRandom
 	cp b
@@ -582,7 +584,7 @@ StatModifierDownEffect:
 	cp LINK_STATE_BATTLING
 	jr z, .statModifierDownEffect
 	call BattleRandom
-	cp $40 ; 1/4 chance to miss by in regular battle
+	cp 25 percent + 1 ; chance to miss by in regular battle
 	jp c, MoveMissed
 .statModifierDownEffect
 	call CheckTargetSubstitute ; can't hit through substitute
@@ -591,7 +593,7 @@ StatModifierDownEffect:
 	cp ATTACK_DOWN_SIDE_EFFECT
 	jr c, .nonSideEffect
 	call BattleRandom
-	cp $55 ; 85/256 chance for side effects
+	cp 33 percent + 1 ; chance for side effects
 	jp nc, CantLowerAnymore
 	ld a, [de]
 	sub ATTACK_DOWN_SIDE_EFFECT ; map each stat to 0-3
@@ -774,7 +776,7 @@ FellText:
 	text_end
 
 PrintStatText:
-	ld hl, StatsTextStrings
+	ld hl, StatModTextStrings
 	ld c, "@"
 .findStatName_outer
 	dec b
@@ -785,11 +787,11 @@ PrintStatText:
 	jr z, .findStatName_outer
 	jr .findStatName_inner
 .foundStatName
-	ld de, wcf4b
+	ld de, wStringBuffer
 	ld bc, $a
 	jp CopyData
 
-INCLUDE "data/battle/stat_names.asm"
+INCLUDE "data/battle/stat_mod_names.asm"
 
 INCLUDE "data/battle/stat_modifiers.asm"
 
@@ -853,14 +855,14 @@ SwitchAndTeleportEffect:
 	jr nc, .playerMoveWasSuccessful ; if so, teleport will always succeed
 	add b
 	ld c, a
-	inc c ; c = sum of player level and enemy level
+	inc c ; c = playerLevel + enemyLevel + 1
 .rejectionSampleLoop1
 	call BattleRandom
 	cp c ; get a random number between 0 and c
 	jr nc, .rejectionSampleLoop1
 	srl b
 	srl b  ; b = enemyLevel / 4
-	cp b ; is rand[0, playerLevel + enemyLevel) >= (enemyLevel / 4)?
+	cp b ; is rand[0, playerLevel + enemyLevel] >= (enemyLevel / 4)?
 	jr nc, .playerMoveWasSuccessful ; if so, allow teleporting
 	ld c, 50
 	call DelayFrames
@@ -1016,9 +1018,9 @@ FlinchSideEffect:
 	call z, ClearHyperBeam
 	ld a, [de]
 	cp FLINCH_SIDE_EFFECT1
-	ld b, $1a ; ~10% chance of flinch
+	ld b, 10 percent + 1 ; chance of flinch (FLINCH_SIDE_EFFECT1)
 	jr z, .gotEffectChance
-	ld b, $4d ; ~30% chance of flinch
+	ld b, 30 percent + 1 ; chance of flinch otherwise
 .gotEffectChance
 	call BattleRandom
 	cp b
@@ -1165,7 +1167,7 @@ RecoilEffect:
 
 ConfusionSideEffect:
 	call BattleRandom
-	cp $19 ; ~10% chance
+	cp 10 percent ; chance of confusion
 	ret nc
 	jr ConfusionSideEffectSuccess
 

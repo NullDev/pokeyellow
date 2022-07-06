@@ -65,7 +65,7 @@ StartMenu_Pokemon::
 	push af
 	call LoadScreenTilesFromBuffer1 ; restore saved screen
 	pop af
-	bit 1, a ; was the B button pressed?
+	bit BIT_B_BUTTON, a
 	jp nz, .loop
 ; if the B button wasn't pressed
 	ld a, [wMaxMenuItem]
@@ -169,7 +169,7 @@ StartMenu_Pokemon::
 	res 1, [hl]
 	jp z, .loop
 	ld a, [wcf91]
-	cp PIKACHU ; is this surfing pikachu?
+	cp STARTER_PIKACHU
 	jr z, .surfingPikachu
 	ld a, $1
 	jr .continue
@@ -377,14 +377,14 @@ StartMenu_Item::
 	ld [hl], a ; old menu item id
 	call HandleMenuInput
 	call PlaceUnfilledArrowMenuCursor
-	bit 1, a ; was the B button pressed?
+	bit BIT_B_BUTTON, a
 	jr z, .useOrTossItem
 	jp ItemMenuLoop
 .useOrTossItem ; if the player made the choice to use or toss the item
 	ld a, [wcf91]
 	ld [wd11e], a
 	call GetItemName
-	call CopyStringToCF4B ; copy name to wcf4b
+	call CopyToStringBuffer
 	ld a, [wcf91]
 	cp BICYCLE
 	jr nz, .notBicycle2
@@ -471,10 +471,10 @@ StartMenu_TrainerInfo::
 	call GBPalWhiteOut
 	call ClearScreen
 	call UpdateSprites
-	ldh a, [hTilesetType]
+	ldh a, [hTileAnimations]
 	push af
 	xor a
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 	call DrawTrainerInfo
 	predef DrawBadges ; draw badges
 	ld b, SET_PAL_TRAINER_CARD
@@ -489,7 +489,7 @@ StartMenu_TrainerInfo::
 	farcall DrawStartMenu ; XXX what difference does this make?
 	call LoadGBPal
 	pop af
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 	jp RedisplayStartMenu_DoNotDrawStartMenu
 
 ; loads tile patterns and draws everything except for gym leader faces / badges

@@ -35,20 +35,23 @@ LoadSAV0:
 	call EnableSRAMAndLatchClockData
 	ld a, $1
 	ld [MBC1SRamBank], a
-	ld hl, sPlayerName ; hero name located in SRAM
-	ld bc, sMainDataCheckSum - sPlayerName ; but here checks the full SAV
+; This vc_hook does not have to be in any particular location.
+; It is defined here because it refers to the same labels as the two lines below.
+	vc_hook Unknown_save_limit
+	ld hl, sGameData
+	ld bc, sGameDataEnd - sGameData
 	call SAVCheckSum
 	ld c, a
-	ld a, [sMainDataCheckSum] ; SAV's checksum
+	ld a, [sMainDataCheckSum]
 	cp c
 	jp z, .checkSumsMatched
 
 ; If the computed checksum didn't match the saved on, try again.
-	ld hl, sPlayerName
-	ld bc, sMainDataCheckSum - sPlayerName
+	ld hl, sGameData
+	ld bc, sGameDataEnd - sGameData
 	call SAVCheckSum
 	ld c, a
-	ld a, [sMainDataCheckSum] ; SAV's checksum
+	ld a, [sMainDataCheckSum]
 	cp c
 	jp nz, SAVBadCheckSum
 
@@ -67,8 +70,8 @@ LoadSAV0:
 	ld de, wSpriteDataStart
 	ld bc, wSpriteDataEnd - wSpriteDataStart
 	call CopyData
-	ld a, [sTilesetType]
-	ldh [hTilesetType], a
+	ld a, [sTileAnimations]
+	ldh [hTileAnimations], a
 	ld hl, sCurBoxData
 	ld de, wBoxDataStart
 	ld bc, wBoxDataEnd - wBoxDataStart
@@ -80,11 +83,11 @@ LoadSAV1:
 	call EnableSRAMAndLatchClockData
 	ld a, $1
 	ld [MBC1SRamBank], a
-	ld hl, sPlayerName ; hero name located in SRAM
-	ld bc, sMainDataCheckSum - sPlayerName  ; but here checks the full SAV
+	ld hl, sGameData
+	ld bc, sGameDataEnd - sGameData
 	call SAVCheckSum
 	ld c, a
-	ld a, [sMainDataCheckSum] ; SAV's checksum
+	ld a, [sMainDataCheckSum]
 	cp c
 	jr nz, SAVBadCheckSum
 	ld hl, sCurBoxData
@@ -98,11 +101,11 @@ LoadSAV2:
 	call EnableSRAMAndLatchClockData
 	ld a, $1
 	ld [MBC1SRamBank], a
-	ld hl, sPlayerName ; hero name located in SRAM
-	ld bc, sMainDataCheckSum - sPlayerName  ; but here checks the full SAV
+	ld hl, sGameData
+	ld bc, sGameDataEnd - sGameData
 	call SAVCheckSum
 	ld c, a
-	ld a, [sMainDataCheckSum] ; SAV's checksum
+	ld a, [sMainDataCheckSum]
 	cp c
 	jp nz, SAVBadCheckSum
 	ld hl, sPartyData
@@ -211,10 +214,10 @@ SaveSAVtoSRAM0:
 	ld de, sCurBoxData
 	ld bc, wBoxDataEnd - wBoxDataStart
 	call CopyData
-	ldh a, [hTilesetType]
-	ld [sTilesetType], a
-	ld hl, sPlayerName
-	ld bc, sMainDataCheckSum - sPlayerName
+	ldh a, [hTileAnimations]
+	ld [sTileAnimations], a
+	ld hl, sGameData
+	ld bc, sGameDataEnd - sGameData
 	call SAVCheckSum
 	ld [sMainDataCheckSum], a
 	call DisableSRAMAndPrepareClockData
@@ -229,8 +232,8 @@ SaveSAVtoSRAM1:
 	ld de, sCurBoxData
 	ld bc, wBoxDataEnd - wBoxDataStart
 	call CopyData
-	ld hl, sPlayerName
-	ld bc, sMainDataCheckSum - sPlayerName
+	ld hl, sGameData
+	ld bc, sGameDataEnd - sGameData
 	call SAVCheckSum
 	ld [sMainDataCheckSum], a
 	call DisableSRAMAndPrepareClockData
@@ -255,8 +258,8 @@ SaveSAVtoSRAM2:
 	inc de
 	ld a, [hl]
 	ld [de], a
-	ld hl, sPlayerName
-	ld bc, sMainDataCheckSum - sPlayerName
+	ld hl, sGameData
+	ld bc, sGameDataEnd - sGameData
 	call SAVCheckSum
 	ld [sMainDataCheckSum], a
 	call DisableSRAMAndPrepareClockData
@@ -342,12 +345,12 @@ ChangeBox::
 	call z, EmptyAllSRAMBoxes ; if so, empty all boxes in SRAM
 	call DisplayChangeBoxMenu
 	call UpdateSprites
-	ld hl, hFlagsFFFA
+	ld hl, hUILayoutFlags
 	set 1, [hl]
 	call HandleMenuInput
-	ld hl, hFlagsFFFA
+	ld hl, hUILayoutFlags
 	res 1, [hl]
-	bit 1, a ; pressed b
+	bit BIT_B_BUTTON, a
 	ret nz
 	ld a, $b6
 	call PlaySoundWaitForCurrent
@@ -429,12 +432,12 @@ DisplayChangeBoxMenu:
 	hlcoord 11, 0
 	lb bc, 12, 7
 	call TextBoxBorder
-	ld hl, hFlagsFFFA
+	ld hl, hUILayoutFlags
 	set 2, [hl]
 	ld de, BoxNames
 	hlcoord 13, 1
 	call PlaceString
-	ld hl, hFlagsFFFA
+	ld hl, hUILayoutFlags
 	res 2, [hl]
 	ld a, [wCurrentBoxNum]
 	and $7f
@@ -554,7 +557,7 @@ GetMonCountsForAllBoxes:
 	ld c, a
 	ld b, 0
 	add hl, bc
-	ld a, [wNumInBox]
+	ld a, [wBoxCount]
 	ld [hl], a
 
 	ret
@@ -584,8 +587,8 @@ SAVCheckRandomID:
 	ld a, [sPlayerName]
 	and a
 	jr z, .next
-	ld hl, sPlayerName
-	ld bc, sMainDataCheckSum - sPlayerName
+	ld hl, sGameData
+	ld bc, sGameDataEnd - sGameData
 	call SAVCheckSum
 	ld c, a
 	ld a, [sMainDataCheckSum]

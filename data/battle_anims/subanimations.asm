@@ -1,4 +1,5 @@
 SubanimationPointers:
+	table_width 2, SubanimationPointers
 	dw Subanimation00
 	dw Subanimation01
 	dw Subanimation02
@@ -85,14 +86,15 @@ SubanimationPointers:
 	dw Subanimation53
 	dw Subanimation54
 	dw Subanimation55
+	assert_table_length NUM_SUBANIMS
 
 ; format:
 ; subanim type, count
 ; REPT count
 ;     db frame block id, base coordinate id, frame block mode
-; endr
+; ENDR
 
-subanim: MACRO
+MACRO subanim
 	db (\1 << 5) | \2
 ENDM
 

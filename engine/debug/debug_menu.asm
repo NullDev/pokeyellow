@@ -25,7 +25,7 @@ IF DEF(_DEBUG)
 	ld de, DebugMenuOptions
 	call PlaceString
 
-	ld a, 3 ; medium speed
+	ld a, TEXT_DELAY_MEDIUM
 	ld [wOptions], a
 
 	ld a, A_BUTTON | B_BUTTON | START
@@ -119,7 +119,7 @@ TestBattle:
 	ld [wGrassMons + 1], a
 	ld b, a
 	ld c, a
-	ld hl, wEnemyPartyMons
+	ld hl, wEnemyPartySpecies
 	call Func_fe809
 	ld hl, wPartyCount
 	call Func_fe809
@@ -310,7 +310,7 @@ Func_fe8d9:
 Func_fe8e2:
 	ld a, [wWhichPokemon]
 	push de
-	ld de, wEnemyPartyMons
+	ld de, wEnemyPartySpecies
 	add e
 	ld e, a
 	jr nc, .asm_fe8ee
@@ -399,7 +399,7 @@ Func_fe964:
 .asm_fe96f
 	ld a, [hl]
 	ld b, a
-	ld hl, wEnemyPartyMons
+	ld hl, wEnemyPartySpecies
 	ld a, [wWhichPokemon]
 	add l
 	ld l, a
@@ -842,7 +842,7 @@ Func_fec9b:
 	lb bc, LEADING_ZEROES | 1, 3
 	call PrintNumber
 	ld a, [wWhichPokemon]
-	ld de, wEnemyPartyMons
+	ld de, wEnemyPartySpecies
 	add e
 	ld e, a
 	jr nc, .asm_fecee
@@ -870,13 +870,13 @@ Func_fed01:
 	jp Func_fe7ca
 
 Text_fed12:
-	db   "けんしろう@"
+	db   "けんしろう@" ; "KENSHIROU@"
 
 Text_fed18:
-	db   "テスト ファイト@"
+	db   "テスト ファイト@" ; "FIGHT TEST@"
 
 Text_fed21:
-	db   "№．  なまえ    レべル@"
+	db   "№．  なまえ    レべル@" ; "№．  NAME  LEVEL@"
 
 Text_fed30:
 	db   "１．▶０００ ーーーーー  ０００"
@@ -893,13 +893,13 @@ Text_feda2:
 	db   "ーーーーー@"
 
 Text_feda8:
-	db   "ワイルドモンスター@"
+	db   "ワイルドモンスター@" ; "WILD #MON@"
 
 Text_fedb2:
-	db   "ディーラー    @"
+	db   "ディーラー    @" ; "TRAINER      @"
 
 Text_fedbc:
-	db   "№．  なまえ        レべル"
+	db   "№．  なまえ        レべル" ; "№．  NAME     LABEL"
 	next ""
 Text_fedcf:
 	db   "０００ ーーーーーーーーーー ０００@"
@@ -919,7 +919,7 @@ Data_feded:
 	db -1 ; end
 
 Func_fedfe:
-	ld a, [wNumInBox]
+	ld a, [wBoxCount]
 	cp 30
 	jp nc, Func_ff1ad
 	call ClearScreen
@@ -1048,7 +1048,7 @@ Func_feeef:
 	ld [wd11e], a
 	ld hl, BaseStats + 15
 	dec a
-	ld bc, MonBaseStatsEnd - MonBaseStats
+	ld bc, BASE_DATA_SIZE
 	call AddNTimes
 	ld de, wMoves
 	ld bc, NUM_MOVES
@@ -1122,7 +1122,7 @@ Func_fef92:
 	ld a, [de]
 	inc a
 	ld [de], a
-	cp NUM_ATTACKS + 1
+	cp NUM_ATTACKS
 	jr c, Func_fef68
 	ld a, 1
 	ld [de], a
@@ -1133,7 +1133,7 @@ Func_fef9e:
 	dec a
 	ld [de], a
 	jr nz, Func_fef68
-	ld a, NUM_ATTACKS
+	ld a, NUM_ATTACKS - 1
 	ld [de], a
 	jr Func_fef68
 
@@ -1445,7 +1445,7 @@ Func_ff1b9:
 	ld hl, Text_ff28f
 	call PrintText
 	callfar EmptyAllSRAMBoxes
-	ld hl, wNumInBox
+	ld hl, wBoxCount
 	xor a
 	ld [hli], a
 	dec a
@@ -1553,7 +1553,7 @@ Func_ff295:
 	call Func_ff2d1
 	ld e, l
 	ld d, h
-	ld hl, wNumInBox
+	ld hl, wBoxCount
 	call Func_ff2f3
 	pop de
 	ld a, d
@@ -1561,7 +1561,7 @@ Func_ff295:
 	ld [wCurrentBoxNum], a
 	push de
 	call Func_ff2d1
-	ld de, wNumInBox
+	ld de, wBoxCount
 	call Func_ff2f3
 	ld a, [wLetterPrintingDelayFlags]
 	push af

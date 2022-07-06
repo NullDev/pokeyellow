@@ -50,9 +50,9 @@ HandleMenuInput_::
 	ld [wCheckFor180DegreeTurn], a
 	ldh a, [hJoy5]
 	ld b, a
-	bit 0, a ; pressed A key?
+	bit BIT_A_BUTTON, a
 	jr nz, .checkOtherKeys
-	bit 6, a ; pressed Up key?
+	bit BIT_D_UP, a
 	jr z, .checkIfDownPressed
 .upPressed
 	ld a, [wCurrentMenuItem] ; selected menu item
@@ -139,7 +139,7 @@ PlaceMenuCursor::
 	jr z, .checkForArrow1
 	ld bc, 40
 	push af
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	bit 1, a ; is the menu double spaced?
 	jr z, .doubleSpaced1
 	ld bc, 20
@@ -163,7 +163,7 @@ PlaceMenuCursor::
 	jr z, .checkForArrow2
 	ld bc, 40
 	push af
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	bit 1, a ; is the menu double spaced?
 	jr z, .doubleSpaced2
 	ld bc, 20

@@ -181,10 +181,10 @@ GetCryData::
 	ret
 
 DisplayPartyMenu::
-	ldh a, [hTilesetType]
+	ldh a, [hTileAnimations]
 	push af
 	xor a
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 	call GBPalWhiteOutWithDelay3
 	call ClearSprites
 	call PartyMenuInit
@@ -192,10 +192,10 @@ DisplayPartyMenu::
 	jp HandlePartyMenuInput
 
 GoBackToPartyMenu::
-	ldh a, [hTilesetType]
+	ldh a, [hTileAnimations]
 	push af
 	xor a
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 	call PartyMenuInit
 	call RedrawPartyMenu
 	jp HandlePartyMenuInput
@@ -268,7 +268,7 @@ HandlePartyMenuInput::
 	and a
 	jp nz, .swappingPokemon
 	pop af
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 	bit 1, b
 	jr nz, .noPokemonChosen
 	ld a, [wPartyCount]
@@ -293,13 +293,13 @@ HandlePartyMenuInput::
 	xor a
 	ld [wMenuItemToSwap], a
 	pop af
-	ldh [hTilesetType], a
+	ldh [hTileAnimations], a
 .noPokemonChosen
 	call BankswitchBack
 	scf
 	ret
 .swappingPokemon
-	bit 1, b ; was the B button pressed?
+	bit BIT_B_BUTTON, b
 	jr z, .handleSwap ; if not, handle swapping the pokemon
 .cancelSwap ; if the B button was pressed
 	farcall ErasePartyMenuCursors
@@ -426,11 +426,11 @@ GetMonHeader::
 	predef IndexToPokedex   ; convert pokemon ID in [wd11e] to pokedex number
 	ld a, [wd11e]
 	dec a
-	ld bc, MonBaseStatsEnd - MonBaseStats
+	ld bc, BASE_DATA_SIZE
 	ld hl, BaseStats
 	call AddNTimes
 	ld de, wMonHeader
-	ld bc, MonBaseStatsEnd - MonBaseStats
+	ld bc, BASE_DATA_SIZE
 	call CopyData
 	jr .done
 .specialID

@@ -1,4 +1,5 @@
 AttackAnimationPointers:
+	table_width 2, AttackAnimationPointers
 	dw PoundAnim
 	dw KarateChopAnim
 	dw DoubleSlapAnim
@@ -27,7 +28,7 @@ AttackAnimationPointers:
 	dw JumpKickAnim
 	dw RollingKickAnim
 	dw SandAttackAnim
-	dw HeatButtAnim
+	dw HeadButtAnim
 	dw HornAttackAnim
 	dw FuryAttackAnim
 	dw HornDrillAnim
@@ -164,6 +165,7 @@ AttackAnimationPointers:
 	dw SlashAnim
 	dw SubstituteAnim
 	dw StruggleAnim
+	assert_table_length NUM_ATTACKS
 	dw ShowPicAnim
 	dw EnemyFlashAnim
 	dw PlayerFlashAnim
@@ -201,6 +203,7 @@ AttackAnimationPointers:
 	dw HidePicAnim
 	dw ThrowRockAnim
 	dw ThrowBaitAnim
+	assert_table_length NUM_ATTACK_ANIMS
 
 ; each animation is a list of subanimations
 ; and/or special effects, terminated by -1
@@ -210,7 +213,7 @@ AttackAnimationPointers:
 ; if \2 is a subanimation_id:
 ;\3: tileset_id
 ;\4: delay
-battle_anim: MACRO
+MACRO battle_anim
 	IF _NARG == 4
 		db (\3 << 6) | \4
 		db \1 - 1
@@ -352,7 +355,7 @@ SandAttackAnim:
 	battle_anim SAND_ATTACK, SUBANIM_28, 1, 6
 	db -1 ; end
 
-HeatButtAnim:
+HeadButtAnim:
 	battle_anim HEADBUTT, SUBANIM_05, 1, 6
 	db -1 ; end
 

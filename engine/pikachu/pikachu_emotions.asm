@@ -256,7 +256,7 @@ load_expression:
 	call DoStarterPikachuEmotions
 	ret
 
-pikaemotion_def: MACRO
+MACRO pikaemotion_def
 \1_id:
 	dw \1
 ENDM
@@ -381,7 +381,7 @@ IsPlayerPikachuAsleepInParty:
 	ld a, [hl]
 	cp $ff
 	jr z, .done
-	cp PIKACHU
+	cp STARTER_PIKACHU
 	jr nz, .curMonNotStarterPikachu
 	callfar IsThisPartymonStarterPikachu
 	jr nc, .curMonNotStarterPikachu
@@ -390,7 +390,7 @@ IsPlayerPikachuAsleepInParty:
 	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes
 	ld a, [hl]
-	and SLP
+	and SLP_MASK
 	jr z, .done
 	jr .curMonSleepingPikachu
 
@@ -414,7 +414,7 @@ INCLUDE "data/pikachu/pikachu_emotions.asm"
 
 PikachuWalksToNurseJoy:
 	ld a, $40
-	ldh [hFFFC], a
+	ldh [hPikachuSpriteVRAMOffset], a
 	call LoadPikachuSpriteIntoVRAM
 	call .GetMovementData
 	and a
@@ -422,7 +422,7 @@ PikachuWalksToNurseJoy:
 	call ApplyPikachuMovementData
 .skip
 	xor a
-	ldh [hFFFC], a
+	ldh [hPikachuSpriteVRAMOffset], a
 	ret
 
 .GetMovementData:

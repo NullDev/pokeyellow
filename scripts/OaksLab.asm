@@ -226,12 +226,12 @@ OaksLabScript9:
 	ld a, SPRITE_FACING_UP
 	ldh [hSpriteFacingDirection], a
 	call SetSpriteFacingDirectionAndDelay
-	ld a, 1
+	ld a, RIVAL_STARTER_JOLTEON
 	ld [wRivalStarter], a
 	ld a, EEVEE
 	ld [wd11e], a
 	call GetMonName
-	ld a, $FF ^ (A_BUTTON | B_BUTTON)
+	ld a, ~(A_BUTTON | B_BUTTON)
 	ld [wJoyIgnore], a
 	ld a, $11
 	ldh [hSpriteIndexOrTextID], a
@@ -371,14 +371,14 @@ OaksLabScript14:
 	; Otherwise, it will evolve into Vaporeon.
 	ld a, [wBattleResult]
 	and a
-	ld b, $3
-	jr nz, .asm_1c660
-	ld b, $2
-.asm_1c660
+	ld b, RIVAL_STARTER_VAPOREON
+	jr nz, .got_rival_starter
+	ld b, RIVAL_STARTER_FLAREON
+.got_rival_starter
 	ld a, b
 	ld [wRivalStarter], a
 
-	ld a, $ff ^ (A_BUTTON | B_BUTTON)
+	ld a, ~(A_BUTTON | B_BUTTON)
 	ld [wJoyIgnore], a
 	ld a, PLAYER_DIR_UP
 	ld [wPlayerMovingDirection], a
@@ -435,7 +435,7 @@ OaksLabScript16:
 	ld a, [wd730]
 	bit 0, a
 	jr nz, .checkRivalPosition
-	ld a, $ff ^ (A_BUTTON | B_BUTTON)
+	ld a, ~(A_BUTTON | B_BUTTON)
 	ld [wJoyIgnore], a
 	ld a, HS_OAKS_LAB_RIVAL
 	ld [wMissableObjectIndex], a
@@ -539,7 +539,7 @@ OaksLabScript20:
 	ret nz
 	call EnableAutoTextBoxDrawing
 	call PlayDefaultMusic
-	ld a, $ff ^ (A_BUTTON | B_BUTTON)
+	ld a, ~(A_BUTTON | B_BUTTON)
 	ld [wJoyIgnore], a
 	call OaksLabScript_1c78e
 	ld a, $14
@@ -1009,7 +1009,7 @@ OaksLabRivalTakesText5:
 
 OaksLabText18:
 	text_asm
-	ld a, PIKACHU
+	ld a, STARTER_PIKACHU
 	ld [wPlayerStarter], a
 	ld [wd11e], a
 	call GetMonName
@@ -1023,11 +1023,11 @@ OaksLabText18:
 	ld [wMonDataLocation], a
 	ld a, 5
 	ld [wCurEnemyLVL], a
-	ld a, PIKACHU
+	ld a, STARTER_PIKACHU
 	ld [wd11e], a
 	ld [wcf91], a
 	call AddPartyMon
-	ld a, 163
+	ld a, LIGHT_BALL_GSC
 	ld [wPartyMon1CatchRate], a
 	call DisablePikachuOverworldSpriteDrawing
 	SetEvent EVENT_GOT_STARTER

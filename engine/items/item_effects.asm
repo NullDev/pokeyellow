@@ -122,7 +122,7 @@ ItemUseBall:
 	ld a, [wPartyCount] ; is party full?
 	cp PARTY_LENGTH
 	jr nz, .canUseBall
-	ld a, [wNumInBox] ; is box full?
+	ld a, [wBoxCount] ; is box full?
 	cp MONS_PER_BOX
 	jp z, BoxFullCannotThrowBall
 
@@ -237,7 +237,7 @@ ItemUseBall:
 	ld a, [wEnemyMonStatus]
 	and a
 	jr z, .skipAilmentValueSubtraction ; no ailments
-	and 1 << FRZ | SLP
+	and (1 << FRZ) | SLP_MASK
 	ld c, 12
 	jr z, .notFrozenOrAsleep
 	ld c, 25
@@ -394,7 +394,7 @@ ItemUseBall:
 	ld a, [wEnemyMonStatus]
 	and a
 	jr z, .skip5
-	and 1 << FRZ | SLP
+	and (1 << FRZ) | SLP_MASK
 	ld b, 5
 	jr z, .addAilmentValue
 	ld b, 10
@@ -934,14 +934,14 @@ ItemUseMedicine:
 	ld [wd0b5], a
 	pop af
 	push af
-	cp $28
-	jr nc, .asm_d906
+	cp CALCIUM + 1
+	jr nc, .noHappinessBoost
 	push hl
 	push de
 	callabd_ModifyPikachuHappiness PIKAHAPPY_USEDITEM
 	pop de
 	pop hl
-.asm_d906
+.noHappinessBoost
 	pop af
 	ld [wcf91], a
 	pop af
@@ -977,7 +977,7 @@ ItemUseMedicine:
 	lb bc, ICE_HEAL_MSG, 1 << FRZ
 	cp ICE_HEAL
 	jr z, .checkMonStatus
-	lb bc, AWAKENING_MSG, SLP
+	lb bc, AWAKENING_MSG, SLP_MASK
 	cp AWAKENING
 	jr z, .checkMonStatus
 	lb bc, PARALYZ_HEAL_MSG, 1 << PAR
@@ -1168,15 +1168,15 @@ ItemUseMedicine:
 	call AddNTimes ; calculate coordinates of HP bar of pokemon that used Softboiled
 	ld a, SFX_HEAL_HP
 	call PlaySoundWaitForCurrent
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	set 0, a
-	ldh [hFlagsFFFA], a
+	ldh [hUILayoutFlags], a
 	ld a, $02
 	ld [wHPBarType], a
 	predef UpdateHPBar2 ; animate HP bar decrease of pokemon that used Softboiled
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	res 0, a
-	ldh [hFlagsFFFA], a
+	ldh [hUILayoutFlags], a
 	pop af
 	ld b, a ; store heal amount (1/5 of max HP)
 	ld hl, wHPBarOldHP + 1
@@ -1323,15 +1323,15 @@ ItemUseMedicine:
 	jr z, .playStatusAilmentCuringSound
 	ld a, SFX_HEAL_HP
 	call PlaySoundWaitForCurrent
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	set 0, a
-	ldh [hFlagsFFFA], a
+	ldh [hUILayoutFlags], a
 	ld a, $02
 	ld [wHPBarType], a
 	predef UpdateHPBar2 ; animate the HP bar lengthening
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	res 0, a
-	ldh [hFlagsFFFA], a
+	ldh [hUILayoutFlags], a
 	ld a, REVIVE_MSG
 	ld [wPartyMenuTypeOrMessageID], a
 	ld a, [wcf91]
@@ -1417,7 +1417,7 @@ ItemUseMedicine:
 	ld [hl], a
 	pop hl
 	call .recalculateStats
-	ld hl, VitaminText
+	ld hl, VitaminStats
 	ld a, [wcf91]
 	sub HP_UP - 1
 	ld c, a
@@ -1433,9 +1433,9 @@ ItemUseMedicine:
 	jr .statNameLoop
 
 .gotStatName
-	ld de, wcf4b
+	ld de, wStringBuffer
 	ld bc, 10
-	call CopyData ; copy the stat's name to wcf4b
+	call CopyData ; copy the stat's name to wStringBuffer
 	ld a, SFX_HEAL_AILMENT
 	call PlaySound
 	ld hl, VitaminStatRoseText
@@ -1563,12 +1563,7 @@ VitaminNoEffectText:
 	text_far _VitaminNoEffectText
 	text_end
 
-VitaminText:
-	db "HEALTH@"
-	db "ATTACK@"
-	db "DEFENSE@"
-	db "SPEED@"
-	db "SPECIAL@"
+INCLUDE "data/battle/stat_names.asm"
 
 ItemUseBait:
 	ld hl, ThrewBaitText
@@ -1899,7 +1894,7 @@ ItemUsePokeflute:
 .inBattle
 	xor a
 	ld [wWereAnyMonsAsleep], a
-	ld b, ~SLP & $ff
+	ld b, ~SLP_MASK
 	ld hl, wPartyMon1Status
 	call WakeUpEntireParty
 	ld a, [wIsInBattle]
@@ -1919,7 +1914,7 @@ ItemUsePokeflute:
 	and b ; remove Sleep status
 	ld [hl], a
 	ld a, c
-	and SLP
+	and SLP_MASK
 	jr z, .asm_e063
 	ld a, $1
 	ld [wWereAnyMonsAsleep], a
@@ -1958,7 +1953,7 @@ WakeUpEntireParty:
 .loop
 	ld a, [hl]
 	push af
-	and SLP ; is pokemon asleep?
+	and SLP_MASK
 	jr z, .notAsleep
 	ld a, 1
 	ld [wWereAnyMonsAsleep], a ; indicate that a pokemon had to be woken up
@@ -2226,7 +2221,7 @@ ItemUsePPRestore:
 	ld a, [hl]
 	ld [wd11e], a
 	call GetMoveName
-	call CopyStringToCF4B ; copy name to wcf4b
+	call CopyToStringBuffer
 	pop hl
 	ld a, [wPPRestoreItem]
 	cp ETHER
@@ -2411,7 +2406,7 @@ ItemUseTMHM:
 	ld a, [wd11e]
 	ld [wMoveNum], a
 	call GetMoveName
-	call CopyStringToCF4B ; copy name to wcf4b
+	call CopyToStringBuffer
 	pop af
 	ld hl, BootedUpTMText
 	jr nc, .printBootedUpMachineText
@@ -2438,7 +2433,7 @@ ItemUseTMHM:
 	ld a, [wcf91]
 	push af
 .chooseMon
-	ld hl, wcf4b
+	ld hl, wStringBuffer
 	ld de, wTempMoveNameBuffer
 	ld bc, 14
 	call CopyData ; save the move name because DisplayPartyMenu will overwrite it
@@ -2449,7 +2444,7 @@ ItemUseTMHM:
 	call DisplayPartyMenu
 	push af
 	ld hl, wTempMoveNameBuffer
-	ld de, wcf4b
+	ld de, wStringBuffer
 	ld bc, 14
 	call CopyData
 	pop af
@@ -2772,7 +2767,7 @@ GetMaxPP:
 	dec a
 	push hl
 	ld hl, Moves
-	ld bc, MoveEnd - Moves
+	ld bc, MOVE_LENGTH
 	call AddNTimes
 	ld de, wcd6d
 	ld a, BANK(Moves)
@@ -2840,7 +2835,7 @@ TossItem_::
 	ld a, [wcf91]
 	ld [wd11e], a
 	call GetItemName
-	call CopyStringToCF4B ; copy name to wcf4b
+	call CopyToStringBuffer
 	ld hl, IsItOKToTossItemText
 	call PrintText
 	hlcoord 14, 7
@@ -2860,7 +2855,7 @@ TossItem_::
 	ld a, [wcf91]
 	ld [wd11e], a
 	call GetItemName
-	call CopyStringToCF4B ; copy name to wcf4b
+	call CopyToStringBuffer
 	ld hl, ThrewAwayItemText
 	call PrintText
 	pop hl
@@ -2902,9 +2897,10 @@ IsKeyItem_::
 	jr nc, .checkIfItemIsHM
 ; if the item is not an HM or TM
 	push af
-	ld hl, KeyItemBitfield
+	ld hl, KeyItemFlags
 	ld de, wBuffer
 	ld bc, 15 ; only 11 bytes are actually used
+	ASSERT 15 >= (NUM_ITEMS + 7) / 8
 	call CopyData
 	pop af
 	dec a
@@ -2926,7 +2922,7 @@ IsKeyItem_::
 INCLUDE "data/items/key_items.asm"
 
 SendNewMonToBox:
-	ld de, wNumInBox
+	ld de, wBoxCount
 	ld a, [de]
 	inc a
 	ld [de], a
@@ -2945,7 +2941,7 @@ SendNewMonToBox:
 	call GetMonHeader
 	ld hl, wBoxMonOT
 	ld bc, NAME_LENGTH
-	ld a, [wNumInBox]
+	ld a, [wBoxCount]
 	dec a
 	jr z, .asm_e732
 	dec a
@@ -2956,7 +2952,7 @@ SendNewMonToBox:
 	ld d, h
 	ld e, l
 	pop hl
-	ld a, [wNumInBox]
+	ld a, [wBoxCount]
 	dec a
 	ld b, a
 .asm_e71f
@@ -2977,7 +2973,7 @@ SendNewMonToBox:
 	ld de, wBoxMonOT
 	ld bc, NAME_LENGTH
 	call CopyData
-	ld a, [wNumInBox]
+	ld a, [wBoxCount]
 	dec a
 	jr z, .asm_e76e
 	ld hl, wBoxMonNicks
@@ -2990,7 +2986,7 @@ SendNewMonToBox:
 	ld d, h
 	ld e, l
 	pop hl
-	ld a, [wNumInBox]
+	ld a, [wBoxCount]
 	dec a
 	ld b, a
 .asm_e75b
@@ -3011,7 +3007,7 @@ SendNewMonToBox:
 	ld a, NAME_MON_SCREEN
 	ld [wNamingScreenType], a
 	predef AskName
-	ld a, [wNumInBox]
+	ld a, [wBoxCount]
 	dec a
 	jr z, .asm_e7ab
 	ld hl, wBoxMons
@@ -3024,7 +3020,7 @@ SendNewMonToBox:
 	ld d, h
 	ld e, l
 	pop hl
-	ld a, [wNumInBox]
+	ld a, [wBoxCount]
 	dec a
 	ld b, a
 .asm_e798

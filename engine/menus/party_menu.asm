@@ -77,14 +77,14 @@ RedrawPartyMenu_::
 	pop hl
 	push hl
 	ld bc, SCREEN_WIDTH + 1 ; down 1 row and right 1 column
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	set 0, a
-	ldh [hFlagsFFFA], a
+	ldh [hUILayoutFlags], a
 	add hl, bc
 	predef DrawHP2 ; draw HP bar and prints current / max HP
-	ldh a, [hFlagsFFFA]
+	ldh a, [hUILayoutFlags]
 	res 0, a
-	ldh [hFlagsFFFA], a
+	ldh [hUILayoutFlags], a
 	call SetPartyMenuHPBarColor ; color the HP bar (on SGB)
 	pop hl
 	jr .printLevel
@@ -139,7 +139,7 @@ RedrawPartyMenu_::
 	ld l, a
 	ld de, wEvosMoves
 	ld a, BANK(EvosMovesPointerTable)
-	ld bc, wEvosMoves.end - wEvosMoves
+	ld bc, wEvosMovesEnd - wEvosMoves
 	call FarCopyData
 	ld hl, wEvosMoves
 	ld de, .notAbleToEvolveText

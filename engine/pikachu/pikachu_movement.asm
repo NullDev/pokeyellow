@@ -958,7 +958,7 @@ LoadPikachuSpriteIntoVRAM:
 	call CopyVideoDataAlternate
 	ld de, PikachuSprite + $c * $10
 	ld hl, vNPCSprites2 + $c * $10
-	ldh a, [hFFFC]
+	ldh a, [hPikachuSpriteVRAMOffset]
 	and a
 	jr z, .load
 	ld de, PikachuSprite + $c * $10
@@ -1045,4 +1045,4 @@ GetSine:
 	ret
 
 SineWave_3f:
-	sine_wave $100
+	sine_table 32

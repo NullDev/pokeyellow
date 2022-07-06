@@ -1,89 +1,80 @@
 ; Value macros
 
-percent EQUS "* $ff / 100"
+DEF percent EQUS "* $ff / 100"
 
-bcd2: MACRO
+MACRO bcd2
 	dn ((\1) / 1000) % 10, ((\1) / 100) % 10
 	dn ((\1) / 10) % 10, (\1) % 10
 ENDM
 
-bcd3: MACRO
+MACRO bcd3
 	dn ((\1) / 100000) % 10, ((\1) / 10000) % 10
 	dn ((\1) / 1000) % 10, ((\1) / 100) % 10
 	dn ((\1) / 10) % 10, (\1) % 10
 ENDM
 
-coins EQUS "bcd2"
-money EQUS "bcd3"
-
-tmhm: MACRO
 ; used in data/pokemon/base_stats/*.asm
-_tms1 = 0 ; TM01-TM24 (24)
-_tms2 = 0 ; TM25-TM48 (24)
-_tms3 = 0 ; TM49-TM50 + HM01-HM05 (7/24)
-REPT _NARG
-	if DEF(\1_TMNUM)
-	if \1_TMNUM < 24 + 1
-_tms1 = _tms1 | (1 << ((\1_TMNUM) - 1))
-	ELIF \1_TMNUM < 48 + 1
-_tms2 = _tms2 | (1 << ((\1_TMNUM) - 1 - 24))
-	else
-_tms3 = _tms3 | (1 << ((\1_TMNUM) - 1 - 48))
-	ENDC
-	else
-		fail "\1 is not a TM or HM move"
-	ENDC
-	SHIFT
-ENDR
-REPT 3 ; TM01-TM24 (24/24)
-	db _tms1 & $ff
-_tms1 = _tms1 >> 8
-ENDR
-REPT 3 ; TM25-TM48 (24/24)
-	db _tms2 & $ff
-_tms2 = _tms2 >> 8
-ENDR
-REPT 1 ; TM49-TM50 + HM01-HM05 (7/8)
-	db _tms3 & $ff
-_tms3 = _tms3 >> 8
-ENDR
+MACRO tmhm
+; initialize bytes to 0
+	FOR n, (NUM_TM_HM + 7) / 8
+		DEF _tm{d:n} = 0
+		ENDR
+	; set bits of bytes
+	REPT _NARG
+		IF DEF(\1_TMNUM)
+			DEF n = (\1_TMNUM - 1) / 8
+			DEF i = (\1_TMNUM - 1) % 8
+			DEF _tm{d:n} |= 1 << i
+		ELSE
+			FAIL "\1 is not a TM or HM move"
+		ENDC
+		SHIFT
+	ENDR
+	; output bytes
+	FOR n, (NUM_TM_HM + 7) / 8
+		db _tm{d:n}
+	ENDR
 ENDM
 
 
 ; Constant data (db, dw, dl) macros
 
-dn: MACRO ; nybbles
-	db (\1 << 4 | \2)
-ENDM
-
-dbw: MACRO
+MACRO dbw
 	db \1
 	dw \2
 ENDM
 
-dba: MACRO
-	dbw BANK(\1), \1
-ENDM
-
-dwb: MACRO
+MACRO dwb
 	dw \1
 	db \2
 ENDM
 
-dab: MACRO
-	dwb \1, BANK(\1)
+MACRO dn ; nybbles
+	REPT _NARG / 2
+		db ((\1) << 4) | (\2)
+		SHIFT 2
+	ENDR
 ENDM
 
-dbbw: MACRO
-	db \1, \2
-	dw \3
+MACRO dba ; dbw bank, address
+	REPT _NARG
+		dbw BANK(\1), \1
+		SHIFT
+	ENDR
 ENDM
 
-sine_wave: MACRO
-; \1: amplitude
-x = 0
-REPT $20
-	dw (sin(x) + (sin(x) & $ff)) >> 8 ; round up
-x = x + (\1) * $40000
-ENDR
+MACRO dab ; dwb address, bank
+	REPT _NARG
+		dwb \1, BANK(\1)
+		SHIFT
+	ENDR
+ENDM
+
+MACRO sine_table
+; \1 samples of sin(x) from x=0 to x<32768 (pi radians)
+	DEF x = 0
+	REPT \1
+		dw (sin(x) + (sin(x) & $ff)) >> 8 ; round up
+		DEF x += DIV(32768, \1) ; a circle has 65536 "degrees"
+	ENDR
 ENDM
