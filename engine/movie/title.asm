@@ -1,10 +1,13 @@
-SetDefaultNamesBeforeTitlescreen::
-	ld hl, NintenText
+PrepareTitleScreen::
+	; These debug names are already copied later in PrepareOakSpeech.
+	; Removing the unused copies below has no apparent impact.
+	; CopyDebugName can also be safely deleted afterwards.
+	ld hl, DebugNewGamePlayerName
 	ld de, wPlayerName
-	call CopyFixedLengthText
-	ld hl, SonyText
+	call CopyDebugName
+	ld hl, DebugNewGameRivalName
 	ld de, wRivalName
-	call CopyFixedLengthText
+	call CopyDebugName
 	xor a
 	ldh [hWY], a
 	ld [wLetterPrintingDelayFlags], a
@@ -258,8 +261,8 @@ LoadCopyrightTiles:
 	jp PlaceString
 
 CopyrightTextString:
-	db   $60,$61,$62,$63,$61,$62,$7c,$7f,$65,$66,$67,$68,$69,$6a			 ; ©1995-1999  Nintendo
-	next $60,$61,$62,$63,$61,$62,$7c,$7f,$6b,$6c,$6d,$6e,$6f,$70,$71,$72	 ; ©1995-1999  Creatures inc.
+	db   $60,$61,$62,$63,$61,$62,$7c,$7f,$65,$66,$67,$68,$69,$6a             ; ©1995-1999  Nintendo
+	next $60,$61,$62,$63,$61,$62,$7c,$7f,$6b,$6c,$6d,$6e,$6f,$70,$71,$72     ; ©1995-1999  Creatures inc.
 	next $60,$61,$62,$63,$61,$62,$7c,$7f,$73,$74,$75,$76,$77,$78,$79,$7a,$7b ; ©1995-1999  GAME FREAK inc.
 	db   "@"
 
@@ -312,7 +315,7 @@ DoTitleScreenFunction:
 .BlinkClosed:
 	ld e, 8
 .LoadBlinkFrame:
-	ld hl, wOAMBuffer + 2
+	ld hl, wShadowOAMSprite00TileID
 	ld c, 8
 .loop
 	ld a, [hl]
@@ -344,13 +347,15 @@ DoTitleScreenFunction:
 	ld [wTitleScreenScene], a
 	ret
 
-; copy text of fixed length NAME_LENGTH (like player name, rival name, mon names, ...)
-CopyFixedLengthText:
+CopyDebugName:
 	ld bc, NAME_LENGTH
 	jp CopyData
 
-NintenText: db "NINTEN@"
-SonyText:   db "SONY@"
+DebugNewGamePlayerName:
+	db "NINTEN@"
+
+DebugNewGameRivalName:
+	db "SONY@"
 
 IncrementResetCounter:
 	ld hl, wTitleScreenScene + 2

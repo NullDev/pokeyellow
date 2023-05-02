@@ -103,7 +103,7 @@ wSpriteStateData1::
 ; - E
 ; - F
 wSpritePlayerStateData1::  spritestatedata1 wSpritePlayerStateData1 ; player is struct 0
-; wSprite02StateData1 - wSprite15StateData1
+; wSprite01StateData1 - wSprite14StateData1
 FOR n, 1, NUM_SPRITESTATEDATA_STRUCTS - 1
 wSprite{02d:n}StateData1:: spritestatedata1 wSprite{02d:n}StateData1
 ENDR
@@ -130,7 +130,7 @@ wSpriteStateData2::
 ; - E: sprite image base offset (in video ram, player always has value 1, used to compute sprite image index)
 ; - F
 wSpritePlayerStateData2::  spritestatedata2 wSpritePlayerStateData2 ; player is struct 0
-; wSprite02StateData2 - wSprite15StateData2
+; wSprite01StateData2 - wSprite14StateData2
 FOR n, 1, NUM_SPRITESTATEDATA_STRUCTS - 1
 wSprite{02d:n}StateData2:: spritestatedata2 wSprite{02d:n}StateData2
 ENDR
@@ -147,12 +147,12 @@ wSpriteDataEnd::
 SECTION "OAM Buffer", WRAM0
 
 ; buffer for OAM data. Copied to OAM by DMA
-wOAMBuffer::
-; wOAMBufferSprite00 - wOAMBufferSprite39
+wShadowOAM::
+; wShadowOAMSprite00 - wShadowOAMSprite39
 FOR n, NUM_SPRITE_OAM_STRUCTS
-wOAMBufferSprite{02d:n}:: sprite_oam_struct wOAMBufferSprite{02d:n}
+wShadowOAMSprite{02d:n}:: sprite_oam_struct wShadowOAMSprite{02d:n}
 ENDR
-wOAMBufferEnd::
+wShadowOAMEnd::
 
 
 SECTION "Tilemap", WRAM0
@@ -1368,7 +1368,7 @@ ENDU
 
 	ds 2
 
-; money received after battle = base money × level of highest-level enemy mon
+; money received after battle = base money × level of last enemy mon
 wTrainerBaseMoney:: dw ; BCD
 
 wMissableObjectCounter:: db
