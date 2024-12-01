@@ -39,7 +39,7 @@ BillsHouseScript_1e09e:
 	ret
 
 BillsHouseScript0:
-	ld a, [wd472]
+	ld a, [wd471]
 	bit 7, a
 	jr z, .asm_1e0d2
 	callfar CheckPikachuFaintedOrStatused
@@ -91,8 +91,8 @@ MovementData_1e7a0:
 	db -1 ; end
 
 BillsHouseScript3:
-	ld a, [wd730]
-	bit 0, a
+	ld a, [wStatusFlags5]
+	bit BIT_SCRIPTED_NPC_MOVEMENT, a
 	ret nz
 	ld a, HS_BILL_POKEMON
 	ld [wMissableObjectIndex], a
@@ -158,7 +158,7 @@ BillsHouseScript5:
 	predef ShowObject
 	ld c, 8
 	call DelayFrames
-	ld hl, wd472
+	ld hl, wd471
 	bit 7, [hl]
 	jr z, .asm_1e1c6
 	call CheckPikachuFollowingPlayer
@@ -199,8 +199,8 @@ PikachuMovementData_1e1a9:
 	db $3f
 
 BillsHouseScript6:
-	ld a, [wd730]
-	bit 0, a
+	ld a, [wStatusFlags5]
+	bit BIT_SCRIPTED_NPC_MOVEMENT, a
 	ret nz
 	SetEvent EVENT_MET_BILL_2 ; this event seems redundant
 	SetEvent EVENT_MET_BILL
@@ -245,7 +245,7 @@ BillsHouseScript8:
 	xor a
 	ld [wJoyIgnore], a
 	ld a, TEXT_BILLSHOUSE_BILL_SS_TICKET
-	ldh [hSpriteIndexOrTextID], a
+	ldh [hTextID], a
 	call DisplayTextID
 	ld a, SCRIPT_BILLSHOUSE_SCRIPT9
 	ld [wBillsHouseCurScript], a

@@ -30,3 +30,5 @@
 
 ; duty 5 reads from sfx data
 .wave5
+; in audio 1: (used by audio/music/lavender.asm and audio/music/pokemontower.asm)
+;	dn 14, 13,  0,  0,  9,  0, 15,  0,  7,  7, 14, 12,  0,  2, 14,  8, 13, 12,  8,  1, 12,  1, 14, 11,  0,  0,  4, 11, 11,  1, 14, 11

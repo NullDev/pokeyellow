@@ -34,6 +34,13 @@ DEF TRANSFERBOTTOM EQU 2
 DEF REDRAW_COL EQU 1
 DEF REDRAW_ROW EQU 2
 
+; hUILayoutFlags
+	const_def
+	const BIT_PARTY_MENU_HP_BAR   ; 0
+	const BIT_DOUBLE_SPACED_MENU  ; 1
+	const BIT_SINGLE_SPACED_LINES ; 2
+	const BIT_PAGE_CHAR_IS_NEXT   ; 3
+
 ; tile list ids
 ; TileIDListPointerTable indexes (see data/tilemaps.asm)
 	const_def

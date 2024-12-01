@@ -140,7 +140,7 @@ CalculatePikachuPlacementCoords::
 	inc hl
 	ld [hl], $fe
 	push hl
-	ld hl, wd472
+	ld hl, wd471
 	set 5, [hl]
 	pop hl
 	ret
@@ -364,7 +364,7 @@ SpawnPikachu_::
 	bit 7, [hl]
 	jp nz, Func_fc745
 	ld a, [wFontLoaded]
-	bit 0, a
+	bit BIT_FONT_LOADED, a
 	jp nz, Func_fc76a
 	call CheckPikachuFollowingPlayer
 	jp nz, Func_fc76a
@@ -614,15 +614,15 @@ Func_fc862:
 	add hl, bc
 	ld [hl], $6
 	xor a
+	ld [wd431], a
 	ld [wd432], a
-	ld [wd433], a
 	ld hl, wSpritePikachuStateData2WalkAnimationCounter - wSpritePikachuStateData1
 	add hl, bc
 	ld [hl], $11
 asm_fc87f:
-	ld a, [wd432]
+	ld a, [wd431]
 	ld e, a
-	ld a, [wd433]
+	ld a, [wd432]
 	ld d, a
 	call Func_fc82e
 	jr c, Func_fc8c7
@@ -648,11 +648,11 @@ asm_fc87f:
 	adc 0
 	ld h, a
 	ld a, [hli]
-	ld [wd432], a
+	ld [wd431], a
 	add e
 	ld e, a
 	ld a, [hl]
-	ld [wd433], a
+	ld [wd432], a
 	add d
 	ld d, a
 	ld hl, wSpritePikachuStateData1YPixels - wSpritePikachuStateData1
@@ -915,8 +915,8 @@ TryDoubleAddPikachuStepVectorToScreenPixelCoords:
 	ld a, [wWalkBikeSurfState]
 	cp $1 ; biking
 	jr nz, AddPikachuStepVectorToScreenPixelCoords
-	ld a, [wd736]
-	bit 6, a
+	ld a, [wMovementFlags]
+	bit BIT_LEDGE_OR_FISHING, a
 	jr nz, AddPikachuStepVectorToScreenPixelCoords
 DoubleAddPikachuStepVectorToScreenPixelCoords:
 	ld hl, wSpritePikachuStateData1YStepVector - wSpritePikachuStateData1
@@ -987,8 +987,8 @@ UpdatePikachuWalkingSprite:
 	dec a
 	swap a
 	ld d, a
-	ld a, [wd736]
-	bit 7, a
+	ld a, [wMovementFlags]
+	bit BIT_SPINNING, a
 	jr nz, .copy_player
 	ld hl, wSpritePikachuStateData1FacingDirection - wSpritePikachuStateData1
 	add hl, bc
@@ -996,7 +996,7 @@ UpdatePikachuWalkingSprite:
 	or d
 	ld d, a
 	ld a, [wFontLoaded]
-	bit 0, a
+	bit BIT_FONT_LOADED, a
 	jr z, .normal_get_sprite_index
 	call Func_fcae2
 	ret c
@@ -1257,8 +1257,8 @@ CheckAbsoluteValueLessThan2:
 Func_fcc08::
 	call Func_fcc23
 	ret nc
-	ld a, [wd736]
-	bit 6, a
+	ld a, [wMovementFlags]
+	bit BIT_LEDGE_OR_FISHING, a
 	jr nz, .asm_fcc1b
 	call Func_fcc42
 	ret c
@@ -1278,7 +1278,7 @@ Func_fcc23:
 	ld a, [wPikachuOverworldStateFlags]
 	bit 7, a
 	jr nz, .asm_fcc40
-	ld a, [wd472]
+	ld a, [wd471]
 	bit 7, a
 	jr z, .asm_fcc40
 	ld a, [wWalkBikeSurfState]
@@ -1294,13 +1294,13 @@ Func_fcc23:
 Func_fcc42:
 	xor a
 	ld a, [wPlayerDirection]
-	bit 3, a
+	bit PLAYER_DIR_BIT_UP, a
 	jr nz, .asm_fcc58
-	bit 2, a
+	bit PLAYER_DIR_BIT_DOWN, a
 	jr nz, .asm_fcc5b
-	bit 1, a
+	bit PLAYER_DIR_BIT_LEFT, a
 	jr nz, .asm_fcc5e
-	bit 0, a
+	bit PLAYER_DIR_BIT_RIGHT, a
 	jr nz, .asm_fcc61
 	scf
 	ret
@@ -1332,13 +1332,13 @@ Func_fcc64:
 	set 6, [hl]
 	xor a
 	ld a, [wPlayerDirection]
-	bit 3, a
+	bit PLAYER_DIR_BIT_UP, a
 	jr nz, .asm_fcc86
-	bit 2, a
+	bit PLAYER_DIR_BIT_DOWN, a
 	jr nz, .asm_fcc89
-	bit 1, a
+	bit PLAYER_DIR_BIT_LEFT, a
 	jr nz, .asm_fcc8c
-	bit 0, a
+	bit PLAYER_DIR_BIT_RIGHT, a
 	jr nz, .asm_fcc8f
 	scf
 	ret
